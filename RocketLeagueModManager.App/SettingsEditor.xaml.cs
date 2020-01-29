@@ -1,11 +1,8 @@
-﻿using Microsoft.Extensions.Options;
-using RocketLeagueModManager.App.ViewModels;
+﻿using RocketLeagueModManager.App.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -13,23 +10,34 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace RocketLeagueModManager.App
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for SettingsEditor.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class SettingsEditor : Window
     {
-        private readonly AppSettings _appSettings;
+        private AppSettings _appSettings;
 
-        public MainWindow(AppSettings appSettings)
+        public SettingsEditor(AppSettings appSettings)
         {
             InitializeComponent();
             _appSettings = appSettings;
-            DataContext = new MainWindowViewModel(_appSettings);
+            var settingsViewModel = new SettingsViewModel(_appSettings);
+            settingsViewModel.SettingsSaved += SettingsViewModel_SettingsSaved;
+            DataContext = settingsViewModel;
+        }
+
+        private void SettingsViewModel_SettingsSaved(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
         }
 
         private void btnWorkshopPathChange_Click(object sender, RoutedEventArgs e)
@@ -41,8 +49,8 @@ namespace RocketLeagueModManager.App
             }
 
             dialog.ShowDialog();
-            _appSettings.WorkshopPath = dialog.SelectedPath;
-            _appSettings.SaveSettings();
+            ((SettingsViewModel)DataContext).WorkshopPath = dialog.SelectedPath;
+
         }
 
         private void btnModPathChange_Click(object sender, RoutedEventArgs e)
@@ -54,14 +62,7 @@ namespace RocketLeagueModManager.App
             }
 
             dialog.ShowDialog();
-            _appSettings.ModPath = dialog.SelectedPath;
-            _appSettings.SaveSettings();
-        }
-
-        private void btnSettings_Click(object sender, RoutedEventArgs e)
-        {
-            var settings = new SettingsEditor(_appSettings);
-            settings.ShowDialog();
+            ((SettingsViewModel)DataContext).ModPath = dialog.SelectedPath;
         }
     }
 }

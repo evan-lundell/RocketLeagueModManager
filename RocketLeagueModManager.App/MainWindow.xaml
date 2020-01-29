@@ -7,22 +7,74 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid Margin="10">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <Grid Grid.Column="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="4*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="4*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="4*" />
+            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <StackPanel Orientation="Vertical" Grid.Row="0">
-                <Label>Workshop File Path:</Label>
-                <TextBox Margin="0,5,0,0" Text="{Binding Path=WorkshopPath}" />
-            </StackPanel>
-            <ListBox Grid.Row="1" ItemsSource="{Binding Path=WorkshopFiles}">
-                
-            </ListBox>
+            <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom" Margin="0,0,0,1" Text="Workshop Path:" />
+            <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding Path=WorkshopPath}" />
+            <Button x:Name="btnWorkshopPathChange" Click="btnWorkshopPathChange_Click" Grid.Row="2" Grid.Column="0" Margin="2" HorizontalAlignment="Left" Padding="5,0">Change</Button>
+            <TextBlock Grid.Row="0" Grid.Column="2" VerticalAlignment="Bottom" Margin="0,0,0,1" Text="Mod Path:" />
+            <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding Path=ModPath}" />
+            <Button x:Name="btnModPathChange" Click="btnModPathChange_Click" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" Margin="2" Padding="5,0">Change</Button>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="4*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="4*" />
+            </Grid.ColumnDefinitions>
+            <ListView Grid.Row="1" ItemsSource="{Binding Path=WorkshopFiles}" SelectedItem="{Binding Path=SelectedWorkshopFile}">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Path=FileName}" />
+                        <GridViewColumn Header="Last Modified" DisplayMemberBinding="{Binding Path=LastModified}" />
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="3*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="3*" />
+                </Grid.RowDefinitions>
+                <Button Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="5,3"
+                        Command="{Binding Path=CopyToModsCommand}" CommandParameter="{Binding Path=SelectedWorkshopFile}">-&gt;</Button>
+                <Button Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="5,3"
+                        Command="{Binding Path=RemoveFromModsCommand}" CommandParameter="{Binding Path=SelectedModFile}">&lt;-</Button>
+            </Grid>
+            <ListView Grid.Column="2" ItemsSource="{Binding Path=ModFiles}" SelectedItem="{Binding Path=SelectedModFile}" SelectionMode="Single">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Path=FileName}" />
+                        <GridViewColumn Header="Active" DisplayMemberBinding="{Binding Path=IsActive}" />
+                        <GridViewColumn Header="LastModified" DisplayMemberBinding="{Binding Path=LastModified}" />
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="4*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="4*" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="btnSettings" Click="btnSettings_Click" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="10,3" Margin="0,5">Settings</Button>
+            <Button Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="10,3" Margin="0,5"
+                    Command="{Binding Path=ActivateCommand}" CommandParameter="{Binding Path=SelectedModFile}">Activate</Button>
         </Grid>
     </Grid>
 </Window>

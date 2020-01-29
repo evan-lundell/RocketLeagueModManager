@@ -1,0 +1,39 @@
+﻿<Window x:Class="RocketLeagueModManager.App.SettingsEditor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RocketLeagueModManager.App"
+        mc:Ignorable="d"
+        Title="SettingsEditor" Height="300" Width="400" ResizeMode="NoResize">
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Text="Workshop Path:" />
+        <TextBox Grid.Row="0" Margin="5,2" Grid.Column="1" Text="{Binding Path=WorkshopPath}" MinWidth="200" MaxWidth="200" IsReadOnly="True" />
+        <Button Grid.Row="0" Grid.Column="2" Margin="5,2" x:Name="btnWorkshopPathChange" Click="btnWorkshopPathChange_Click">Change</Button>
+        <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Text="Mod Path:" />
+        <TextBox Grid.Row="1" Grid.Column="1" Margin="5,2" Text="{Binding Path=ModPath}" MinWidth="200" MaxWidth="200" IsReadOnly="True" />
+        <Button Grid.Row="1" Grid.Column="2" Margin="5,2" x:Name="btnModPathChange" Click="btnModPathChange_Click">Change</Button>
+        <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Text="Active File Name:" />
+        <TextBox Grid.Row="2" Grid.Column="1" Margin="5,2" Text="{Binding Path=ActiveFileName}" />
+        <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="1" Margin="2,0" VerticalAlignment="Bottom" Command="{Binding Path=SaveCommand}">Save</Button>
+            <Button Grid.Column="2" Margin="2,0" VerticalAlignment="Bottom" x:Name="btnCancel" Click="btnCancel_Click">Cancel</Button>
+        </Grid>
+    </Grid>
+</Window>
