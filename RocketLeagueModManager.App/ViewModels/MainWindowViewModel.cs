@@ -104,7 +104,9 @@ namespace RocketLeagueModManager.App.ViewModels
                 var workshopFiles = workshopDirectory
                     .GetFiles($"*{AppSettings.ModFileExtension}", SearchOption.AllDirectories);
                 var modFiles = modDirectory.GetFiles($"*{AppSettings.ModFileExtension}", SearchOption.TopDirectoryOnly);
-                foreach (var fileInfo in workshopFiles.Except(modFiles, new FileInfoNameComparer()))
+                foreach (var fileInfo in workshopFiles
+                    .Except(modFiles, new FileInfoNameComparer())
+                    .OrderByDescending(f => f.LastWriteTime))
                 {
                     WorkshopFiles.Add(new ModFile(fileInfo));
                 }
@@ -131,7 +133,9 @@ namespace RocketLeagueModManager.App.ViewModels
                     _activeFile = null;
                 }
 
-                foreach (var fileInfo in files.Where(f => !f.Name.Equals(_appSettings.ActiveFileName, StringComparison.OrdinalIgnoreCase)))
+                foreach (var fileInfo in files
+                    .Where(f => !f.Name.Equals(_appSettings.ActiveFileName, StringComparison.OrdinalIgnoreCase))
+                    .OrderBy(f => f.Name))
                 {
                     ModFiles.Add(new ModFile(fileInfo, 
                         _activeFile != null && AreFilesEqual(fileInfo, _activeFile)));
@@ -167,6 +171,7 @@ namespace RocketLeagueModManager.App.ViewModels
 
                 for (int i = 0; i < iterations; i++)
                 {
+                    //System.Diagnostics.Debug.WriteLine($"Iteration: {i}");
                     stream1.Read(one, 0, bytesToRead);
                     stream2.Read(two, 0, bytesToRead);
 
