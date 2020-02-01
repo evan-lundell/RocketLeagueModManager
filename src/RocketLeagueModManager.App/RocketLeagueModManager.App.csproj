@@ -5,6 +5,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>RocketLeagueModManager</AssemblyName>
+    <Authors>Evan Lundell</Authors>
   </PropertyGroup>
 
   <ItemGroup>

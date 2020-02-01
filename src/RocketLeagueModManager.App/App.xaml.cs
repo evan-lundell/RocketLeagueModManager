@@ -9,6 +9,7 @@ using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -20,6 +21,7 @@ namespace RocketLeagueModManager.App
     public partial class App : Application
     {
         private readonly IHost host;
+        private Mutex _mutex;
 
         public static IServiceProvider ServiceProvider { get; private set; }
 
@@ -59,6 +61,14 @@ namespace RocketLeagueModManager.App
 
         protected async override void OnStartup(StartupEventArgs e)
         {
+            const string appName = "RocketLeagueModManager";
+            _mutex = new Mutex(true, appName, out bool createdNew);
+
+            if (!createdNew)
+            {
+                Application.Current.Shutdown();
+            }
+
             await host.StartAsync();
 
             var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
