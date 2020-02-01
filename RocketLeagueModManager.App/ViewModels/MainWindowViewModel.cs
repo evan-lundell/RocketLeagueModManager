@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.Extensions.Logging;
+using RocketLeagueModManager.App.Utilities;
+using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using Microsoft.Extensions.Logging;
 
 namespace RocketLeagueModManager.App.ViewModels
 {
@@ -77,9 +74,14 @@ namespace RocketLeagueModManager.App.ViewModels
             }
         }
 
-        public ICommand ActivateCommand { get; private set; }
-        public ICommand CopyToModsCommand { get; private set; }
-        public ICommand RemoveFromModsCommand { get; private set; }
+        public ICommand ActivateCommand { get; }
+        public ICommand CopyToModsCommand { get; }
+        public ICommand RemoveFromModsCommand { get; }
+        public ICommand LaunchBakkesModCommand { get; }
+        public ICommand LaunchRocketLeagueCommand { get; }
+        public ICommand DeactivateCommand { get; }
+
+        public event EventHandler<UserMessageEventArgs> UserMessaged;
 
         public MainWindowViewModel(AppSettings appSettings, ILogger<MainWindowViewModel> logger)
         {
@@ -90,23 +92,45 @@ namespace RocketLeagueModManager.App.ViewModels
             ModFiles = new ObservableCollection<ModFile>();
             WorkshopPath = _appSettings.WorkshopPath;
             ModPath = _appSettings.ModPath;
-            LoadWorkshopFiles();
-            LoadModFiles();
             ActivateCommand = new RelayCommand<ModFile>(ActivateFile, CanActivateFile);
             CopyToModsCommand = new RelayCommand<ModFile>(CopyToModFiles);
             RemoveFromModsCommand = new RelayCommand<ModFile>(RemoveFromModFiles);
+            LaunchBakkesModCommand = new RelayCommand(LaunchBakkesMod);
+            LaunchRocketLeagueCommand = new RelayCommand(LaunchRocketLeague);
+            DeactivateCommand = new RelayCommand<ModFile>(DeactivateFile, CanDeactivateFile);
+        }
+
+        public void Initialize()
+        {
+            LoadWorkshopFiles();
+            LoadModFiles();
         }
 
         private void LoadWorkshopFiles()
         {
             try
             {
+                if (!Directory.Exists(WorkshopPath))
+                {
+                    return;
+                }
+
                 WorkshopFiles.Clear();
                 var workshopDirectory = new DirectoryInfo(WorkshopPath);
                 var modDirectory = new DirectoryInfo(ModPath);
                 var workshopFiles = workshopDirectory
                     .GetFiles($"*{AppSettings.ModFileExtension}", SearchOption.AllDirectories);
-                var modFiles = modDirectory.GetFiles($"*{AppSettings.ModFileExtension}", SearchOption.TopDirectoryOnly);
+
+                FileInfo[] modFiles;
+                if (Directory.Exists(ModPath))
+                {
+                    modFiles = modDirectory.GetFiles($"*{AppSettings.ModFileExtension}", SearchOption.TopDirectoryOnly);
+                }
+                else
+                {
+                    modFiles = new FileInfo[0];
+                }
+
                 foreach (var fileInfo in workshopFiles
                     .Except(modFiles, new FileInfoNameComparer())
                     .OrderByDescending(f => f.LastWriteTime))
@@ -116,7 +140,7 @@ namespace RocketLeagueModManager.App.ViewModels
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to load workshop files.");
+                HandleError("Failed to load workshop files. See the log file for more details", ex);
             }
         }
 
@@ -124,6 +148,11 @@ namespace RocketLeagueModManager.App.ViewModels
         {
             try
             {
+                if (!Directory.Exists(ModPath))
+                {
+                    return;
+                }
+
                 ModFiles.Clear();
                 var directory = new DirectoryInfo(ModPath);
                 var files = directory.GetFiles($"*{AppSettings.ModFileExtension}", SearchOption.TopDirectoryOnly);
@@ -147,7 +176,7 @@ namespace RocketLeagueModManager.App.ViewModels
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to load mod files.");
+                HandleError("Failed to load mod files. See the log file for more details", ex);
             }
         }
 
@@ -198,7 +227,7 @@ namespace RocketLeagueModManager.App.ViewModels
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to activate file {File}", selectedModFile?.FileName ?? "<Null file>");
+                HandleError($"Failed to activate file {selectedModFile?.FileName ?? "<Null file>"}. See the log file for more details", ex);
             }
         }
 
@@ -211,13 +240,19 @@ namespace RocketLeagueModManager.App.ViewModels
         {
             try
             {
+                if (!Directory.Exists(ModPath))
+                {
+                    HandleError("The mod path is set to a valid folder. Please select a valid folder and try again.");
+                    return;
+                }
+
                 File.Copy(selectedWorkshopFile.FileInfo.FullName, Path.Combine(_appSettings.ModPath, selectedWorkshopFile.FileName));
                 LoadWorkshopFiles();
                 LoadModFiles();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to move file {File} to mods folder.", selectedWorkshopFile?.FileName ?? "<Null file>");
+                HandleError($"Failed to move file {selectedWorkshopFile?.FileName ?? "<Null file>"} to mods folder. See the log file for more details", ex);
             }
         }
 
@@ -231,7 +266,7 @@ namespace RocketLeagueModManager.App.ViewModels
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to delete mod file {File}.", selectedModFile?.FileName ?? "<Null file>");
+                HandleError($"Failed to delete mod file {selectedModFile?.FileName ?? " <Null file>"}. See the log file for more details", ex);
             }
         }
 
@@ -243,6 +278,87 @@ namespace RocketLeagueModManager.App.ViewModels
             _activeFile = new FileInfo(Path.Combine(ModPath, settings.ActiveFileName));
             LoadWorkshopFiles();
             LoadModFiles();
+        }
+
+        private void HandleError(string message, Exception ex = null, bool notifyUser = true)
+        {
+            if (ex != null)
+            {
+                _logger.LogError(message, ex);
+            }
+
+            if (notifyUser)
+            {
+                UserMessaged?.Invoke(this, new UserMessageEventArgs(message));
+            }
+        }
+
+        private void LaunchBakkesMod()
+        {
+            try
+            {
+                if (!File.Exists(_appSettings.BakkesModPath))
+                {
+                    HandleError("Unable to find Bakkes mod executable. Set the path in the settings and try again.");
+                    return;
+                }
+
+                var processes = Process.GetProcessesByName("BakkesMod");
+                if (processes.Length > 0)
+                {
+                    HandleError("Bakkes Mod is already running.");
+                    return;
+                }
+
+                Process.Start(_appSettings.BakkesModPath);
+            }
+            catch (Exception ex)
+            {
+                HandleError("Failed to launch Bakke's Mod. See the log for more details.", ex);
+            }
+        }
+
+        private void LaunchRocketLeague()
+        {
+            try
+            {
+                if (!File.Exists(_appSettings.RocketLeaguePath))
+                {
+                    HandleError("Unable to find Bakkes mod executable. Set the path in the settings and try again.");
+                    return;
+                }
+
+                var processes = Process.GetProcessesByName("RocketLeague");
+                if (processes.Length > 0)
+                {
+                    HandleError("Rocket League is already running.");
+                    return;
+                }
+
+                Process.Start(_appSettings.RocketLeaguePath);
+            }
+            catch (Exception ex)
+            {
+                HandleError("Failed to launch Rocket League. See the log for more details.", ex);
+            }
+        }
+
+        private void DeactivateFile(ModFile selectedFile)
+        {
+            try
+            {
+                _activeFile.Delete();
+                LoadModFiles();
+            }
+            catch (Exception ex)
+            {
+                HandleError($"Failed to deactive file {selectedFile.FileName}.", ex);
+            }
+        }
+
+        private bool CanDeactivateFile(ModFile selectedFile)
+        {
+            return selectedFile?.IsActive ?? false;
         }
     }
 }

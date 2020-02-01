@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using RocketLeagueModManager.App.Utilities;
 using RocketLeagueModManager.App.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,7 @@ namespace RocketLeagueModManager.App
             _appSettings = appSettings;
             _logger = logger;
             _logger.LogInformation("Application Started");
+            ((MainWindowViewModel)DataContext).UserMessaged += MainWindowViewModel_UserMessage;
         }
 
         private void btnWorkshopPathChange_Click(object sender, RoutedEventArgs e)
@@ -66,6 +68,16 @@ namespace RocketLeagueModManager.App
         {
             var settings = App.ServiceProvider.GetRequiredService<SettingsEditor>();
             settings.ShowDialog();
+        }
+
+        private void MainWindowViewModel_UserMessage(object sender, UserMessageEventArgs e)
+        {
+            MessageBox.Show(e.Message);
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            ((MainWindowViewModel)DataContext).Initialize();
         }
     }
 }

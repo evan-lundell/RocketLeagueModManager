@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:RocketLeagueModManager.App"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
+        Loaded="Window_Loaded"
         DataContext="{Binding Source={StaticResource Locator}, Path=MainWindowViewModel}">
     <Grid Margin="10">
         <Grid.RowDefinitions>
@@ -74,8 +75,26 @@
                 <ColumnDefinition Width="4*" />
             </Grid.ColumnDefinitions>
             <Button x:Name="btnSettings" Click="btnSettings_Click" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="10,3" Margin="0,5">Settings</Button>
-            <Button Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="10,3" Margin="0,5"
-                    Command="{Binding Path=ActivateCommand}" CommandParameter="{Binding Path=SelectedModFile}">Activate</Button>
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal" Grid.Row="0">
+                    <Button VerticalAlignment="Top" Padding="10,3" Margin="2,5"
+                            Command="{Binding Path=ActivateCommand}" CommandParameter="{Binding Path=SelectedModFile}">Activate</Button>
+                    <Button Grid.Column="1" VerticalAlignment="Top" Padding="10,3" Margin="2,5"
+                            Command="{Binding Path=DeactivateCommand}" CommandParameter="{Binding Path=SelectedModFile}">Deactivate</Button>
+                </StackPanel>
+                <Grid Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Margin="2,0" Padding="2" Command="{Binding Path=LaunchBakkesModCommand}">Launch Bakke's Mod</Button>
+                    <Button Grid.Column="1" Margin="2,0" Padding="2" Command="{Binding Path=LaunchRocketLeagueCommand}">Launch Rocket League</Button>
+                </Grid>
+            </Grid>
         </Grid>
     </Grid>
 </Window>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Input;
 
-namespace RocketLeagueModManager.App
+namespace RocketLeagueModManager.App.Utilities
 {
     public class RelayCommand : ICommand
     {
@@ -13,10 +13,10 @@ namespace RocketLeagueModManager.App
             remove { CommandManager.RequerySuggested -= value; }
         }
 
-        private readonly Action<object> _execute;
-        private readonly Predicate<object> _canExecute;
+        private readonly Action _execute;
+        private readonly Func<bool> _canExecute;
 
-        public RelayCommand(Action<object> execute, Predicate<object> canExecute = null)
+        public RelayCommand(Action execute, Func<bool> canExecute = null)
         {
             _execute = execute;
             _canExecute = canExecute;
@@ -26,14 +26,14 @@ namespace RocketLeagueModManager.App
         {
             if (_canExecute != null)
             {
-                return _canExecute(parameter);
+                return _canExecute();
             }
             return true;
         }
 
         public void Execute(object parameter)
         {
-            _execute(parameter);
+            _execute();
         }
     }
 

@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 
-namespace RocketLeagueModManager.App
+namespace RocketLeagueModManager.App.Utilities
 {
     public class FileInfoNameComparer : IEqualityComparer<FileInfo>
     {

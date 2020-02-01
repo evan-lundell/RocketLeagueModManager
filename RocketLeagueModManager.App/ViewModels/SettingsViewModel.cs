@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Input;
+using RocketLeagueModManager.App.Utilities;
 
 namespace RocketLeagueModManager.App.ViewModels
 {
@@ -12,8 +13,8 @@ namespace RocketLeagueModManager.App.ViewModels
         public event EventHandler SettingsSaved;
 
         private string _workshopPath;
-        public string WorkshopPath 
-        { 
+        public string WorkshopPath
+        {
             get
             {
                 return _workshopPath;
@@ -53,6 +54,34 @@ namespace RocketLeagueModManager.App.ViewModels
             }
         }
 
+        private string _bakkesModPath;
+        public string BakkesModPath
+        {
+            get
+            {
+                return _bakkesModPath;
+            }
+            set
+            {
+                _bakkesModPath = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _rocketLeaguePath;
+        public string RocketLeaguePath
+        {
+            get
+            {
+                return _rocketLeaguePath;
+            }
+            set
+            {
+                _rocketLeaguePath = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ICommand SaveCommand { get; set; }
 
         public SettingsViewModel(AppSettings appSettings)
@@ -61,14 +90,18 @@ namespace RocketLeagueModManager.App.ViewModels
             WorkshopPath = _appSettings.WorkshopPath;
             ModPath = _appSettings.ModPath;
             ActiveFileName = _appSettings.ActiveFileName;
+            BakkesModPath = _appSettings.BakkesModPath;
+            RocketLeaguePath = _appSettings.RocketLeaguePath;
             SaveCommand = new RelayCommand(Save);
         }
 
-        private void Save(object param)
+        private void Save()
         {
             _appSettings.WorkshopPath = WorkshopPath;
             _appSettings.ModPath = ModPath;
             _appSettings.ActiveFileName = ActiveFileName;
+            _appSettings.BakkesModPath = BakkesModPath;
+            _appSettings.RocketLeaguePath = RocketLeaguePath;
             _appSettings.SaveSettings();
             SettingsSaved?.Invoke(this, EventArgs.Empty);
         }

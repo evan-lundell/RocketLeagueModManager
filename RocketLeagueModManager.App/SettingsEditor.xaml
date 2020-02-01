@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RocketLeagueModManager.App"
         mc:Ignorable="d"
-        Title="SettingsEditor" Height="300" Width="400" ResizeMode="NoResize"
+        Title="SettingsEditor" Height="300" Width="450" ResizeMode="NoResize"
         Closed="Window_Closed"
         DataContext="{Binding Source={StaticResource Locator}, Path=SettingsViewModel}">
     <Grid Margin="10">
@@ -15,6 +15,8 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
@@ -28,7 +30,13 @@
         <Button Grid.Row="1" Grid.Column="2" Margin="5,2" x:Name="btnModPathChange" Click="btnModPathChange_Click">Change</Button>
         <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Text="Active File Name:" />
         <TextBox Grid.Row="2" Grid.Column="1" Margin="5,2" Text="{Binding Path=ActiveFileName}" />
-        <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2">
+        <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Right" Text="Bakkes Mod Path:" />
+        <TextBox Grid.Row="3" Grid.Column="1" Margin="5,2" Text="{Binding Path=BakkesModPath}" MinWidth="200" MaxWidth="200" IsReadOnly="True" />
+        <Button Grid.Row="3" Grid.Column="2" Margin="5,2" x:Name="btnBakkesModPathChange" Click="btnBakkesModPathChange_Click">Change</Button>
+        <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right" Text="Rocket League Path:" />
+        <TextBox Grid.Row="4" Grid.Column="1" Margin="5,2" Text="{Binding Path=RocketLeaguePath}" MinWidth="200" MaxWidth="200" IsReadOnly="True" />
+        <Button Grid.Row="4" Grid.Column="2" Margin="5,2" x:Name="btnRocketLeaguePathChange" Click="btnRocketLeaguePathChange_Click">Change</Button>
+        <Grid Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />

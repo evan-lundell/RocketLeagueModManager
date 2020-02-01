@@ -14,6 +14,8 @@ namespace RocketLeagueModManager.App
         public string WorkshopPath { get; set; }
         public string ModPath { get; set; }
         public string ActiveFileName { get; set; }
+        public string BakkesModPath { get; set; }
+        public string RocketLeaguePath { get; set; }
 
         public void SaveSettings()
         {

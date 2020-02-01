@@ -70,5 +70,29 @@ namespace RocketLeagueModManager.App
         {
             ((SettingsViewModel)DataContext).SettingsSaved -= SettingsViewModel_SettingsSaved;
         }
+
+        private void btnBakkesModPathChange_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new System.Windows.Forms.OpenFileDialog();
+            if (Directory.Exists(System.IO.Path.GetDirectoryName(_appSettings.BakkesModPath)))
+            {
+                dialog.InitialDirectory = System.IO.Path.GetDirectoryName(_appSettings.BakkesModPath);
+            }
+            
+            dialog.ShowDialog();
+            ((SettingsViewModel)DataContext).BakkesModPath = dialog.FileName;
+        }
+
+        private void btnRocketLeaguePathChange_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new System.Windows.Forms.OpenFileDialog();
+            if (Directory.Exists(System.IO.Path.GetDirectoryName(_appSettings.RocketLeaguePath)))
+            {
+                dialog.InitialDirectory = System.IO.Path.GetDirectoryName(_appSettings.RocketLeaguePath);
+            }
+
+            dialog.ShowDialog();
+            ((SettingsViewModel)DataContext).RocketLeaguePath = dialog.FileName;
+        }
     }
 }
