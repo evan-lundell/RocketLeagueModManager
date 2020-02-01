@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RocketLeagueModManager.App"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800"
+        DataContext="{Binding Source={StaticResource Locator}, Path=MainWindowViewModel}">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />

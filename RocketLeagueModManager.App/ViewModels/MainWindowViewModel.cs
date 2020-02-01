@@ -8,12 +8,14 @@ using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Microsoft.Extensions.Logging;
 
 namespace RocketLeagueModManager.App.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
         private readonly AppSettings _appSettings;
+        private readonly ILogger<MainWindowViewModel> _logger;
         private FileInfo _activeFile;
 
         private string _workshopPath;
@@ -79,9 +81,10 @@ namespace RocketLeagueModManager.App.ViewModels
         public ICommand CopyToModsCommand { get; private set; }
         public ICommand RemoveFromModsCommand { get; private set; }
 
-        public MainWindowViewModel(AppSettings appSettings)
+        public MainWindowViewModel(AppSettings appSettings, ILogger<MainWindowViewModel> logger)
         {
             _appSettings = appSettings;
+            _logger = logger;
             _appSettings.AppSettingsChanged += AppSettings_Changed;
             WorkshopFiles = new ObservableCollection<ModFile>();
             ModFiles = new ObservableCollection<ModFile>();
@@ -113,7 +116,7 @@ namespace RocketLeagueModManager.App.ViewModels
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Failed to load Workshop Files.");
+                _logger.LogError(ex, "Failed to load workshop files.");
             }
         }
 
@@ -144,7 +147,7 @@ namespace RocketLeagueModManager.App.ViewModels
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Failed to load Mod Files.");
+                _logger.LogError(ex, "Failed to load mod files.");
             }
         }
 
@@ -189,13 +192,13 @@ namespace RocketLeagueModManager.App.ViewModels
         {
             try
             {
-                _activeFile.Delete();
+                _activeFile?.Delete();
                 File.Copy(selectedModFile.FileInfo.FullName, Path.Combine(_appSettings.ModPath, _appSettings.ActiveFileName));
                 LoadModFiles();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Failed to activate file");
+                _logger.LogError(ex, "Failed to activate file {File}", selectedModFile?.FileName ?? "<Null file>");
             }
         }
 
@@ -214,7 +217,7 @@ namespace RocketLeagueModManager.App.ViewModels
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Failed to move file to mods folder");
+                _logger.LogError(ex, "Failed to move file {File} to mods folder.", selectedWorkshopFile?.FileName ?? "<Null file>");
             }
         }
 
@@ -228,7 +231,7 @@ namespace RocketLeagueModManager.App.ViewModels
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Failed to delete mod file");
+                _logger.LogError(ex, "Failed to delete mod file {File}.", selectedModFile?.FileName ?? "<Null file>");
             }
         }
 

@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RocketLeagueModManager.App"
         mc:Ignorable="d"
-        Title="SettingsEditor" Height="300" Width="400" ResizeMode="NoResize">
+        Title="SettingsEditor" Height="300" Width="400" ResizeMode="NoResize"
+        Closed="Window_Closed"
+        DataContext="{Binding Source={StaticResource Locator}, Path=SettingsViewModel}">
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto" />

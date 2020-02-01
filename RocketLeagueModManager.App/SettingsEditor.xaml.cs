@@ -1,4 +1,5 @@
-﻿using RocketLeagueModManager.App.ViewModels;
+﻿using Microsoft.Extensions.DependencyInjection;
+using RocketLeagueModManager.App.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,7 +26,7 @@ namespace RocketLeagueModManager.App
         {
             InitializeComponent();
             _appSettings = appSettings;
-            var settingsViewModel = new SettingsViewModel(_appSettings);
+            var settingsViewModel = App.ServiceProvider.GetRequiredService<SettingsViewModel>();
             settingsViewModel.SettingsSaved += SettingsViewModel_SettingsSaved;
             DataContext = settingsViewModel;
         }
@@ -42,7 +43,7 @@ namespace RocketLeagueModManager.App
 
         private void btnWorkshopPathChange_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
+            var dialog = new System.Windows.Forms.FolderBrowserDialog();
             if (Directory.Exists(_appSettings.WorkshopPath))
             {
                 dialog.SelectedPath = _appSettings.WorkshopPath;
@@ -55,7 +56,7 @@ namespace RocketLeagueModManager.App
 
         private void btnModPathChange_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
+            var dialog = new System.Windows.Forms.FolderBrowserDialog();
             if (Directory.Exists(_appSettings.ModPath))
             {
                 dialog.SelectedPath = _appSettings.ModPath;
@@ -63,6 +64,11 @@ namespace RocketLeagueModManager.App
 
             dialog.ShowDialog();
             ((SettingsViewModel)DataContext).ModPath = dialog.SelectedPath;
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            ((SettingsViewModel)DataContext).SettingsSaved -= SettingsViewModel_SettingsSaved;
         }
     }
 }
